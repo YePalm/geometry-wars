@@ -1,6 +1,8 @@
 import objects from "../src/objects.json";
 import Bullet from "./Bullet"
 
+const scoreBoard = document.getElementById("scoreBoard") as HTMLElement;
+
 interface ShipCoordinates {
     x0: number;
     y0: number;
@@ -20,6 +22,8 @@ class Ship {
     private shotCooldown: number = 100;
     private trail: { x: number; y: number; alpha: number }[] = [];
     private trailMaxLength: number = 25;
+    private scoredPoints: number = 0;
+    private floatingPoints: { points: number, x: number, y: number }[] = [];
 
     constructor(private ctx: CanvasRenderingContext2D) {
         this.shipCoordinates = objects.ship;
@@ -31,7 +35,7 @@ class Ship {
             this.drawShip();
         };
     }
-    getBullets(): Bullet[] {
+    getBullets(): Bullet[] { // getting array of all bullets
         return this.bullets;
     }
     setupControls() {
@@ -41,10 +45,10 @@ class Ship {
         window.addEventListener("keyup", (e) => this.handleKey(e, false));
     }
     private keys: { [key: string]: boolean } = {};
-    handleKey(event: KeyboardEvent, isPressed: boolean) {
+    handleKey(event: KeyboardEvent, isPressed: boolean) { // buttons handling
         this.keys[event.key] = isPressed;
     }
-    update() {
+    update() { // updating ship position
         let speedAngle: number = 10
         this.shoot()
         this.bullets.forEach((bullet, index) => {
@@ -190,7 +194,7 @@ class Ship {
             }
         }
 
-        //draw trail
+        // drawing trail
         this.angle = Math.max(-180, Math.min(this.angle, 180));
         this.trail.push({ x: this.x, y: this.y, alpha: 1.5 });
 
@@ -198,7 +202,7 @@ class Ship {
             this.trail.shift();
         }
     }
-    drawShip() {
+    drawShip() { // drawing ship and trail
         this.drawTrail();
         this.ctx.save();
         this.ctx.translate(this.x, this.y);
@@ -219,7 +223,7 @@ class Ship {
 
         this.ctx.restore();
     }
-    shoot() {
+    shoot() { // adding bullets to array of all bullets (ship shooting)
         const currentTime = performance.now();
         if (currentTime - this.lastShotTime < this.shotCooldown) {
             return
@@ -255,10 +259,10 @@ class Ship {
             }
         }
     }
-    drawBullets() {
+    drawBullets() { // drawing bullets
         this.bullets.forEach(bullet => bullet.draw());
     }
-    drawTrail() {
+    drawTrail() { //drawing tail
         for (let i = 0; i < this.trail.length; i++) {
             let { x, y, alpha } = this.trail[i];
 
@@ -274,6 +278,21 @@ class Ship {
 
             this.trail[i].alpha *= 0.9;
         }
+    }
+    addPoints(points: number, x: number, y: number) { // adding global and temporary points
+        this.scoredPoints += points
+        this.floatingPoints.push({ points, x, y })
+        setTimeout(() => {
+            this.floatingPoints.pop()
+        }, 1000);
+    }
+    drawPoints() { //drawing global and temporary poinst
+        scoreBoard.innerHTML = `Scored poinst: ${this.scoredPoints}`
+        this.floatingPoints.forEach(point => {
+            this.ctx.font = "50px Arial";
+            this.ctx.strokeStyle = "yellow";
+            this.ctx.strokeText(point.points.toString(), point.x, point.y);
+        });
     }
 }
 

@@ -17,12 +17,12 @@ class GreenSquare {
         this.image = new Image();
         this.image.src = "./../src/img/spritesheet.png";
     }
-    update() {
+    update() { //updating position
         this.x += this.speed * Math.sin(this.angle * Math.PI / 180);
         this.y -= this.speed * Math.cos(this.angle * Math.PI / 180);
         this.isOffScreen()
     }
-    draw() {
+    draw() { //drawing bullet
         this.ctx.drawImage(
             this.image,
             this.GreenSquareCoordinates.x0,
@@ -35,7 +35,7 @@ class GreenSquare {
             this.GreenSquareCoordinates.h * 0.16,
         );
     }
-    isOffScreen() {
+    isOffScreen() { // checking if is of screen
         if (this.x < 0) {
             if (this.angle == -45) this.angle = 45
             if (this.angle == -135) this.angle = 135

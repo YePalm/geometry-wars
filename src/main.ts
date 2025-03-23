@@ -9,6 +9,7 @@ let greenSquares: GreenSquare[] = []
 if (ctx) {
   ship = new Ship(ctx);
 }
+
 //squares
 interface Squares {
   lastShotTime: number;
@@ -37,11 +38,12 @@ const squares: Squares = {
   }
 }
 
-function checkCollision() {
+function checkCollision() { // checking collisions
   const bullets = ship.getBullets()
   for (let i = 0; i < bullets.length; i++) {
-    for (let j = 0; j < greenSquares.length; j++) {
+    for (let j = 0; j < greenSquares.length; j++) { // with green squares
       if (bullets[i].didHitSquare(greenSquares[j])) {
+        ship.addPoints(20, bullets[i].x, bullets[i].y)
         bullets.splice(i, 1)
         greenSquares.splice(j, 1)
         break
@@ -57,6 +59,7 @@ function gameLoop() {
   ship.drawShip();
   ship.update()
   ship.drawBullets()
+  ship.drawPoints()
 
   //enemies (sqaures etc)
   squares.fillSquares(ctx)
