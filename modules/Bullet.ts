@@ -1,11 +1,17 @@
 import objects from "../src/objects.json";
-import GreenSquare from "./GreenSquare";
 
 interface bulletCoordinates {
     x0: number;
     y0: number;
     w: number;
     h: number;
+}
+
+interface Square {
+    x: number;
+    y: number;
+    getWidth(): number;
+    getHeight(): number;
 }
 
 class Bulelt {
@@ -49,11 +55,11 @@ class Bulelt {
             return false
         }
     }
-    didHitSquare(square: GreenSquare) { // AABB collision
-        return this.x < square.x + (square.GreenSquareCoordinates.w * 0.16) &&
+    didHitSquare(square: Square) { // AABB collision
+        return this.x < square.x + square.getWidth() &&
             this.x + (this.bulletCoordinates.w * 0.05) > square.x &&
-            this.y < square.y + (square.GreenSquareCoordinates.h * 0.16) &&
-            this.y + (this.bulletCoordinates.h * 0.05) > square.y
+            this.y < square.y + square.getHeight() &&
+            this.y + (this.bulletCoordinates.h * 0.05) > square.y;
     }
 }
 

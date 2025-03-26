@@ -7,15 +7,32 @@ interface GreenSquareCoordinates {
     h: number;
 }
 
-class GreenSquare {
+interface Square {
+    x: number;
+    y: number;
+    getWidth(): number;
+    getHeight(): number;
+}
+
+class GreenSquare implements Square {
     public GreenSquareCoordinates: GreenSquareCoordinates;
+    public x: number;
+    public y: number;
     private image: HTMLImageElement;
     private speed: number = 4;
 
-    constructor(private ctx: CanvasRenderingContext2D, public x: number, public y: number, private angle: number) {
+    constructor(private ctx: CanvasRenderingContext2D, x: number, y: number, private angle: number) {
+        this.x = x
+        this.y = y
         this.GreenSquareCoordinates = objects.greenSquare;
         this.image = new Image();
         this.image.src = "./../src/img/spritesheet.png";
+    }
+    getWidth() {
+        return this.GreenSquareCoordinates.w * 0.16;
+    }
+    getHeight() {
+        return this.GreenSquareCoordinates.h * 0.16;
     }
     update() { //updating position
         this.x += this.speed * Math.sin(this.angle * Math.PI / 180);

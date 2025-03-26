@@ -38,6 +38,9 @@ class Ship {
     getBullets(): Bullet[] { // getting array of all bullets
         return this.bullets;
     }
+    getCoordinates() { // getting ship coordinates
+        return { x: this.x, y: this.y };
+    }
     setupControls() {
         window.addEventListener("keydown", (e) => this.handleKey(e, true));
         window.addEventListener("keyup", (e) => this.handleKey(e, false));
@@ -108,7 +111,8 @@ class Ship {
                 this.x -= this.speed / Math.sqrt(2);
                 if (this.angle < 45 && this.angle > -135) this.angle -= speedAngle
                 if (this.angle > 45) this.angle += speedAngle
-                if (this.angle == 180) this.angle = -179 //czemu nie dziala???
+                if (this.angle >= 180) this.angle = -179
+                if (this.angle <= -180) this.angle = 179
                 if (this.angle < -135 && this.angle > -180) this.angle += speedAngle
             }
         }
@@ -132,6 +136,7 @@ class Ship {
                     this.y -= this.speed;
                     if (this.angle > 0 && this.angle < 180) {
                         this.angle -= speedAngle
+                        if (this.angle < 0) this.angle = 0
                     }
                     if (this.angle < 0 && this.angle > -180) {
                         this.angle += speedAngle
@@ -289,9 +294,15 @@ class Ship {
     drawPoints() { //drawing global and temporary poinst
         scoreBoard.innerHTML = `Scored poinst: ${this.scoredPoints}`
         this.floatingPoints.forEach(point => {
-            this.ctx.font = "50px Arial";
-            this.ctx.strokeStyle = "yellow";
-            this.ctx.strokeText(point.points.toString(), point.x, point.y);
+            if (point.points == 20) {
+                this.ctx.font = "50px Arial";
+                this.ctx.strokeStyle = "yellow";
+                this.ctx.strokeText(point.points.toString(), point.x, point.y);
+            } else if (point.points == 40) {
+                this.ctx.font = "50px Arial";
+                this.ctx.strokeStyle = "cyan";
+                this.ctx.strokeText(point.points.toString(), point.x, point.y);
+            }
         });
     }
 }
