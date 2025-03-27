@@ -47,19 +47,19 @@ const squares: Squares = {
   }
 }
 
-function checkCollision() { // checking collisions
+function checkCollision() { // checking collisions bullets - squares
   const bullets = ship.getBullets()
   for (let i = bullets.length - 1; i >= 0; i--) {
     for (let j = greenSquares.length - 1; j >= 0; j--) {
-      if (bullets[i].didHitSquare(greenSquares[j])) {
+      if (bullets[i] && bullets[i].didHitSquare(greenSquares[j])) {
+        // bullets - squares
         ship.addPoints(20, bullets[i].x, bullets[i].y);
         bullets.splice(i, 1);
         greenSquares.splice(j, 1);
-        break;
       }
     }
     for (let k = purpleSquares.length - 1; k >= 0; k--) {
-      if (bullets[i] && bullets[i].didHitSquare(purpleSquares[k])) { // Sprawdzamy, czy bullets[i] istnieje
+      if (bullets[i] && bullets[i].didHitSquare(purpleSquares[k])) {
         ship.addPoints(40, bullets[i].x, bullets[i].y);
         bullets.splice(i, 1);
         purpleSquares.splice(k, 1);
@@ -69,6 +69,50 @@ function checkCollision() { // checking collisions
   }
 }
 
+function checkCollisionShip() { // checking collisions ship - squares
+  for (let i = greenSquares.length - 1; i >= 0; i--) {
+    if (ship.didHitSquare(greenSquares[i])) {
+      greenSquares.splice(i, 1);
+      ship.lifes -= 1
+      ship.x = canvas.width * 5
+
+      setTimeout(() => {
+        ship.x = canvas.width / 2;
+        ship.y = canvas.height / 2;
+      }, 1000);
+      break
+    }
+  }
+  for (let i = purpleSquares.length - 1; i >= 0; i--) {
+    if (ship.didHitSquare(purpleSquares[i])) {
+      purpleSquares.splice(i, 1);
+      ship.lifes -= 1
+      ship.x = canvas.width * 5
+
+      setTimeout(() => {
+        ship.x = canvas.width / 2;
+        ship.y = canvas.height / 2;
+      }, 1000);
+      break
+    }
+    if (ship.lifes == 0) {
+      let looseBox = document.getElementById("looseBox") as HTMLDivElement
+      let looseButton = document.getElementById("resetButton") as HTMLButtonElement
+      looseBox.style.display = "block"
+      looseButton.onclick = reset
+    }
+  }
+}
+
+function reset() {
+  let looseBox = document.getElementById("looseBox") as HTMLDivElement
+  looseBox.style.display = "none"
+  greenSquares = []
+  purpleSquares = []
+  ship = new Ship(ctx);
+  ship.setupControls()
+}
+
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -76,7 +120,7 @@ function gameLoop() {
   ship.drawShip();
   ship.update()
   ship.drawBullets()
-  ship.drawPoints()
+  ship.drawStats()
 
   //enemies (sqaures etc)
   squares.fillSquares(ctx)
@@ -88,6 +132,7 @@ function gameLoop() {
 
   //checking collision
   checkCollision()
+  checkCollisionShip()
 
   //frames
   requestAnimationFrame(gameLoop)

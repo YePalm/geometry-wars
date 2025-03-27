@@ -3,6 +3,13 @@ import Bullet from "./Bullet"
 
 const scoreBoard = document.getElementById("scoreBoard") as HTMLElement;
 
+interface Square {
+    x: number;
+    y: number;
+    getWidth(): number;
+    getHeight(): number;
+}
+
 interface ShipCoordinates {
     x0: number;
     y0: number;
@@ -13,8 +20,8 @@ interface ShipCoordinates {
 class Ship {
     private shipCoordinates: ShipCoordinates;
     private image: HTMLImageElement;
-    private x: number;
-    private y: number;
+    public x: number;
+    public y: number;
     private speed: number = 9;
     private angle: number = 0;
     private bullets: Bullet[] = [];
@@ -24,6 +31,7 @@ class Ship {
     private trailMaxLength: number = 25;
     private scoredPoints: number = 0;
     private floatingPoints: { points: number, x: number, y: number }[] = [];
+    public lifes: number = 3
 
     constructor(private ctx: CanvasRenderingContext2D) {
         this.shipCoordinates = objects.ship;
@@ -60,35 +68,8 @@ class Ship {
                 this.bullets.splice(index, 1);
             }
         });
-        // if (this.keys["w"] && this.keys["a"]) { // Lewo-góra (↖)
-        //     if (this.y > 1 && this.x > 0) {
-        //         this.y -= this.speed / Math.sqrt(2);
-        //         this.x -= this.speed / Math.sqrt(2);
-        //         this.angle = -45;
-        //     }
-        // }
-        // else if (this.keys["w"] && this.keys["d"]) { // Prawo-góra (↗)
-        //     if (this.y > 1 && this.x < 1450) {
-        //         this.y -= this.speed / Math.sqrt(2);
-        //         this.x += this.speed / Math.sqrt(2);
-        //         this.angle = 45;
-        //     }
-        // }
-        // else if (this.keys["s"] && this.keys["a"]) { // Lewo-dół (↙)
-        //     if (this.y <= 743 && this.x > 0) {
-        //         this.y += this.speed / Math.sqrt(2);
-        //         this.x -= this.speed / Math.sqrt(2);
-        //         this.angle = -135;
-        //     }
-        // }
-        // else if (this.keys["s"] && this.keys["d"]) { // Prawo-dół (↘)
-        //     if (this.y <= 743 && this.x < 1450) {
-        //         this.y += this.speed / Math.sqrt(2);
-        //         this.x += this.speed / Math.sqrt(2);
-        //         this.angle = 135;
-        //     }
-        // }
 
+        //movement
         if (this.keys["w"] && this.keys["a"]) {
             if (this.y > 0 + this.shipCoordinates.w * 0.1 && this.x > 5 + this.shipCoordinates.w * 0.1) {
                 this.y -= this.speed / Math.sqrt(2);
@@ -291,8 +272,12 @@ class Ship {
             this.floatingPoints.pop()
         }, 1000);
     }
-    drawPoints() { //drawing global and temporary poinst
-        scoreBoard.innerHTML = `Scored poinst: ${this.scoredPoints}`
+    drawStats() { //drawing global and temporary poinst
+        scoreBoard.innerHTML = `Scored poinst: ${this.scoredPoints} `
+        scoreBoard.innerHTML += `<div class="score-divider"></div>`
+        for (let i = 0; i < this.lifes; i++) {
+            scoreBoard.innerHTML += `<img src="./src/img/heart.png" alt="">`
+        }
         this.floatingPoints.forEach(point => {
             if (point.points == 20) {
                 this.ctx.font = "50px Arial";
@@ -304,6 +289,12 @@ class Ship {
                 this.ctx.strokeText(point.points.toString(), point.x, point.y);
             }
         });
+    }
+    didHitSquare(square: Square) { // AABB collision
+        return this.x < square.x + square.getWidth() &&
+            this.x + (this.shipCoordinates.w * 0.05) > square.x &&
+            this.y < square.y + square.getHeight() &&
+            this.y + (this.shipCoordinates.h * 0.05) > square.y;
     }
 }
 
