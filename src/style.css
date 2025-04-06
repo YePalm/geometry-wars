@@ -8,6 +8,7 @@ body {
 }
 
 #scoreBoard {
+    margin: 0px;
     height: 40px;
     display: flex;
     align-items: center;

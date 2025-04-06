@@ -20,7 +20,7 @@ class PurpleSquare implements Square {
     public x: number;
     public y: number;
     private image: HTMLImageElement;
-    private speed: number = 4;
+    private speed: number = 6; //4
     private shipX: number = 0
     private shipY: number = 0
 

@@ -17,7 +17,7 @@ interface Square {
 class Bulelt {
     private bulletCoordinates: bulletCoordinates;
     private image: HTMLImageElement;
-    private speed: number = 13;
+    private speed: number = 15;
 
     constructor(private ctx: CanvasRenderingContext2D, private angle: number, public x: number, public y: number) {
         this.bulletCoordinates = objects.bullet;

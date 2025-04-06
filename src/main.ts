@@ -7,6 +7,7 @@ const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 let ship: Ship;
 let greenSquares: GreenSquare[] = []
 let purpleSquares: PurpleSquare[] = []
+let isGameOver: Boolean = false;
 
 if (ctx) {
   ship = new Ship(ctx);
@@ -26,23 +27,42 @@ const squares: Squares = {
   greenShotCooldown: 1000,
   prupleShotCooldown: 1000,
   fillSquares(ctx: CanvasRenderingContext2D) {
+    let randomX: number
+    let randomY: number
     const currentTime = performance.now();
     if (currentTime - this.lastShotTime < this.greenShotCooldown) {
       return
     }
     this.lastShotTime = currentTime;
+    console.log(ship.getCoordinates());
 
-    if (greenSquares.length < 8) { // filling green squares (8 default)
-      let angles: number[] = [-135, -45, 45, 135]
-      let randomX: number = Math.floor(Math.random() * 1200) + 100;
-      let randomY: number = Math.floor(Math.random() * 700) + 100;
-      let randomAngle: number = angles[Math.floor(Math.random() * angles.length)]
-      greenSquares.push(new GreenSquare(ctx, randomX, randomY, randomAngle))
+    if (greenSquares.length < 6) { // filling green squares (8 default)
+      let angles: number[] = [-135, -45, 45, 135];
+      let spawned = false;
+      while (!spawned) {
+        randomX = Math.floor(Math.random() * 1200) + 100;
+        randomY = Math.floor(Math.random() * 700) + 100;
+        let distance = Math.sqrt(Math.pow(ship.getCoordinates().x - randomX, 2) + Math.pow(ship.getCoordinates().y - randomY, 2));
+
+        if (distance > 200) {
+          let randomAngle = angles[Math.floor(Math.random() * angles.length)];
+          greenSquares.push(new GreenSquare(ctx, randomX, randomY, randomAngle));
+          spawned = true;
+        }
+      }
     }
-    if (purpleSquares.length < 5) { // filling purple squares (5 default)
-      let randomX: number = Math.floor(Math.random() * 1200) + 100;
-      let randomY: number = Math.floor(Math.random() * 700) + 100;
-      purpleSquares.push(new PurpleSquare(ctx, randomX, randomY))
+    if (purpleSquares.length < 4) { // filling purple squares (5 default)
+      let spawned = false;
+      while (!spawned) {
+        randomX = Math.floor(Math.random() * 1200) + 100;
+        randomY = Math.floor(Math.random() * 700) + 100;
+        let distance = Math.sqrt(Math.pow(ship.getCoordinates().x - randomX, 2) + Math.pow(ship.getCoordinates().y - randomY, 2));
+
+        if (distance > 400) {
+          purpleSquares.push(new PurpleSquare(ctx, randomX, randomY))
+          spawned = true;
+        }
+      }
     }
   }
 }
@@ -96,6 +116,7 @@ function checkCollisionShip() { // checking collisions ship - squares
       break
     }
     if (ship.lifes == 0) {
+      isGameOver = true;
       let looseBox = document.getElementById("looseBox") as HTMLDivElement
       let looseButton = document.getElementById("resetButton") as HTMLButtonElement
       looseBox.style.display = "block"
@@ -105,15 +126,18 @@ function checkCollisionShip() { // checking collisions ship - squares
 }
 
 function reset() {
+  isGameOver = false;
   let looseBox = document.getElementById("looseBox") as HTMLDivElement
   looseBox.style.display = "none"
   greenSquares = []
   purpleSquares = []
   ship = new Ship(ctx);
   ship.setupControls()
+  requestAnimationFrame(gameLoop)
 }
 
 function gameLoop() {
+  if (isGameOver) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   //ship and bullets
@@ -144,5 +168,3 @@ function init() {
 }
 
 init()
-
-
