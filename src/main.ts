@@ -17,15 +17,13 @@ if (ctx) {
 interface Squares {
   lastShotTime: number;
   greenShotCooldown: number;
-  prupleShotCooldown: number;
   fillSquares(ctx: CanvasRenderingContext2D): void;
 }
 
 //green squares
 const squares: Squares = {
   lastShotTime: 0,
-  greenShotCooldown: 1000,
-  prupleShotCooldown: 1000,
+  greenShotCooldown: 800,
   fillSquares(ctx: CanvasRenderingContext2D) {
     let randomX: number
     let randomY: number
